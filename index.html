@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=6" />
   <script>
     try {
       const p = JSON.parse(localStorage.getItem('na-prefs') || '{}');
@@ -77,8 +77,10 @@
 
     <section class="intro wrap" id="top" aria-labelledby="introTitle">
       <div class="intro-text">
-        <p class="label">Data &amp; reporting · Selangor, Malaysia</p>
-        <h1 id="introTitle">Hi, I'm Aniesah.</h1>
+        <div class="intro-head">
+          <p class="label">Data &amp; reporting · Selangor, Malaysia</p>
+          <h1 id="introTitle">Hi, I'm Aniesah.</h1>
+        </div>
         <p class="lede">
           I studied Computer Science (Data Science) at Universiti Malaysia Sabah and just finished six months
           on the Data &amp; AI team at Allianz Malaysia. Most of my time there went into making reports
@@ -413,6 +415,6 @@
     <button class="lb-btn lb-next" id="lbNext" aria-label="Next photo">→</button>
   </div>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=2"></script>
 </body>
 </html>
