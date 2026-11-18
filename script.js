@@ -306,4 +306,67 @@
     toast('Opening your email app…');
   });
 
+  const chat = $('#chat');
+  const endpoint = (chat?.dataset.endpoint || '').trim();
+  if (chat && endpoint) {
+    const openBtn = $('#chatOpen'), chatPanel = $('#chatPanel'), log = $('#chatLog'),
+          chatForm = $('#chatForm'), input = $('#chatInput'), send = $('#chatSend'), suggest = $('#chatSuggest');
+    const history = [];
+    let busy = false;
+    document.body.classList.add('has-chat');
+    openBtn.hidden = false;
+
+    const add = (text, cls) => {
+      const li = document.createElement('li');
+      li.className = 'msg ' + cls;
+      li.textContent = text;
+      log.appendChild(li);
+      log.scrollTop = log.scrollHeight;
+      return li;
+    };
+    add("Hi! Ask me anything about Aniesah's experience, projects or skills.", 'bot');
+
+    const setOpen = (open) => {
+      chatPanel.hidden = !open;
+      openBtn.hidden = open;
+      openBtn.setAttribute('aria-expanded', String(open));
+      if (open) input.focus(); else openBtn.focus();
+    };
+    openBtn.addEventListener('click', () => setOpen(true));
+    $('#chatClose').addEventListener('click', () => setOpen(false));
+    chatPanel.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+
+    async function ask(question) {
+      question = question.trim();
+      if (!question || busy) return;
+      busy = true; send.disabled = true; suggest.hidden = true;
+      add(question, 'me');
+      history.push({ role: 'user', text: question });
+      input.value = '';
+      const typing = add('Typing…', 'bot typing');
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: history.slice(-10) }),
+        });
+        const data = await res.json().catch(() => ({}));
+        typing.remove();
+        if (!res.ok || !data.reply) {
+          add(data.error || 'Something went wrong. Please try again.', 'err');
+          history.pop();
+        } else {
+          add(data.reply, 'bot');
+          history.push({ role: 'model', text: data.reply });
+        }
+      } catch {
+        typing.remove();
+        add("Couldn't connect. Check your internet and try again.", 'err');
+        history.pop();
+      }
+      busy = false; send.disabled = false; input.focus();
+    }
+    chatForm.addEventListener('submit', (e) => { e.preventDefault(); ask(input.value); });
+    $$('button', suggest).forEach(b => b.addEventListener('click', () => ask(b.textContent)));
+  }
 })();
